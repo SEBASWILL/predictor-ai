@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predictor Neural</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d0d0f;
+    color: #f0eeff;
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #c084fc, #7c5cfc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.4rem;
+    text-align: center;
+  }
+  .sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: #7a7a9a;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+  .card {
+    background: #16161a;
+    border: 1px solid #2a2a35;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+  }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: #7a7a9a;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.08em;
+  }
+  input[type=number] {
+    width: 100%;
+    background: #1e1e24;
+    border: 1px solid #2a2a35;
+    border-radius: 8px;
+    color: #f0eeff;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    padding: 0.7rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type=number]:focus { border-color: #7c5cfc; }
+  button {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #7c5cfc, #c084fc);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  button:hover { opacity: 0.85; }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .result {
+    margin-top: 1.5rem;
+    background: #1e1e24;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    display: none;
+  }
+  .result-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: #7a7a9a;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+  .result-number {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #c084fc, #7c5cfc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .error {
+    margin-top: 1rem;
+    color: #f87171;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    text-align: center;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<h1>Predictor Neural</h1>
+<p class="sub">modelo entrenado · corriendo en servidor</p>
+<div class="card">
+  <div class="grid">
+    <div>
+      <label>C1</label>
+      <input type="number" id="c1" value="20" step="any">
+    </div>
+    <div>
+      <label>C2</label>
+      <input type="number" id="c2" value="21" step="any">
+    </div>
+  </div>
+  <button id="btn" onclick="predecir()">Predecir</button>
+  <div class="result" id="result">
+    <div class="result-label">RESULTADO</div>
+    <div class="result-number" id="numero">—</div>
+  </div>
+  <div class="error" id="error">Error conectando con el servidor</div>
+</div>
+
+<script>
+async function predecir() {
+  const btn = document.getElementById('btn');
+  const c1 = parseFloat(document.getElementById('c1').value);
+  const c2 = parseFloat(document.getElementById('c2').value);
+  if (isNaN(c1) || isNaN(c2)) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Calculando...';
+  document.getElementById('error').style.display = 'none';
+
+  try {
+    const res = await fetch('/predecir', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ c1, c2 })
+    });
+    const data = await res.json();
+    document.getElementById('numero').textContent = data.prediccion.toFixed(2);
+    document.getElementById('result').style.display = 'block';
+  } catch(e) {
+    document.getElementById('error').style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Predecir';
+}
+</script>
+</body>
+</html>
