@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import tensorflow as tf
 import numpy as np
@@ -25,6 +26,7 @@ def predecir(datos: Entrada):
     resultado = modelo.predict(entrada)
     return {"prediccion": float(resultado[0][0])}
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def root():
-    return {"status": "ok", "mensaje": "API funcionando"}
+    with open("index.html", "r") as f:
+        return f.read()
