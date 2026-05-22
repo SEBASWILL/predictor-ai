@@ -266,7 +266,8 @@
         const data = await res.json();
         const c = data.prediccion;
 
-        formulaDetail.textContent = `√(${a}² + ${b}²) = √${(a*a + b*b).toFixed(2)} ≈ ${c.toFixed(4)}`;
+        // formulaDetail.textContent = `√(${a}² + ${b}²) = √${(a*a + b*b).toFixed(2)} ≈ ${}`;
+        formulaDetail.textContent = `√(${a}² + ${b}²) = √${(a*a + b*b).toFixed(2)} ≈ ${Math.sqrt(a*a + b*b).toFixed(2)}`;
         resultVal.textContent = c.toFixed(4);
 
         void resultBox.offsetWidth;
