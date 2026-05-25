@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-modelo = tf.keras.models.load_model("modelo.kerasx")
+modelo = tf.keras.models.load_model("model.keras")
 
 class Entrada(BaseModel):
     c1: float
