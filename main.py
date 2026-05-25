@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-modelo = tf.keras.models.load_model("model.keras")
+modelo = tf.keras.models.load_model("hipotenusa_model.keras")
 
 class Entrada(BaseModel):
     c1: float
