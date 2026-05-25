@@ -16,15 +16,32 @@ app.add_middleware(
 
 modelo = tf.keras.models.load_model("hipotenusa_model.keras")
 
+SCALER_MAX = np.sqrt(2)  # ← debe ser el mismo valor que usaste al entrenar
+
 class Entrada(BaseModel):
     c1: float
     c2: float
 
 @app.post("/predecir")
 def predecir(datos: Entrada):
-    entrada = np.array([[datos.c1, datos.c2]], dtype=float)
-    resultado = modelo.predict(entrada)
-    return {"prediccion": float(resultado[0][0])}
+    a = abs(datos.c1)
+    b = abs(datos.c2)
+
+    mayor = max(a, b)
+    menor = min(a, b)
+
+    r = menor / mayor                               # razón siempre entre 0 y 1
+
+    entrada = np.array([[r]], dtype=float)
+    pred_norm = modelo.predict(entrada, verbose=0)[0][0]
+
+    factor = pred_norm * SCALER_MAX                 # desnormalizar
+    resultado = mayor * factor                      # escalar al tamaño real
+
+    return {
+        "prediccion": round(float(resultado), 6),
+        "real": round(float(np.sqrt(a**2 + b**2)), 6)   # opcional, para comparar
+    }
 
 @app.get("/", response_class=HTMLResponse)
 def root():
