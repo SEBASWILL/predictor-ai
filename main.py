@@ -30,3 +30,8 @@ def predecir(datos: Entrada):
 def root():
     with open("index.html", "r") as f:
         return f.read()
+
+@app.get("/2", response_class=HTMLResponse)
+def root():
+    with open("index1.html", "r") as f:
+        return f.read()
